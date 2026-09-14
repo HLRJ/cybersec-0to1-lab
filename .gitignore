@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Lab evidence and captures
+artifacts/*
+!artifacts/.gitkeep
+*.pcap
+*.pcapng
+
+# Local databases / runtime
+*.db
+*.sqlite
+*.sqlite3
+logs/
