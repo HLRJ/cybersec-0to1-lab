@@ -29,3 +29,6 @@ artifacts/*
 *.sqlite
 *.sqlite3
 logs/
+
+# Local Git worktrees
+.worktrees/
