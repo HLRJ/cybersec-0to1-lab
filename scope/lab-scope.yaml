@@ -1,0 +1,14 @@
+version: 1
+name: cybersec-0to1-local-lab
+policy: deny-by-default
+owner: local-student
+
+# 第一阶段只允许 IP 字面量，不解析主机名或 URL。
+allowed_networks:
+  - 127.0.0.0/8
+  - 192.168.56.0/24
+
+notes:
+  - 127.0.0.0/8 用于本机实验。
+  - 192.168.56.0/24 用于 VMware Host-Only 实验网。
+  - 任何未显式列出的地址默认拒绝。
