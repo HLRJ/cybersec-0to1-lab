@@ -34,5 +34,5 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
 
-      - name: Run S00 scope tests
-        run: python -m pytest tests/test_scope_policy.py tests/test_scope_cli.py -q
+      - name: Run test suite
+        run: python -m pytest -q

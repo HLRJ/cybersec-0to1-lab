@@ -89,26 +89,69 @@ Recon + 架构还原、Security Assessment + Attack Path、Code Fix + Hardening 
 
 阶段目标：建立一个**合法、隔离、可恢复、可观察**的实验环境。后续任何安全实验都必须可重复、可回滚、有证据。
 
-## S00-L01 — 授权范围与实验规则
+> 顺序原则：先创建真实、隔离的实验资产，再根据这些真实资产定义 Scope。课程不先虚构一个网段，再让学习者围绕不存在的资产做授权实验。
+
+## S00-L01 — Build Your Cyber Range
+
+**深度：C1–C2**
+
+学什么：VMware Host-Only、NAT、IPv4/CIDR、默认路由、静态地址、镜像完整性校验、基础隔离验证。
+
+写什么：
+- `labs/s00/l01-cyber-range/README.md`：从零搭建 Ubuntu + Kali + Host-Only Range；
+- 记录自己实际使用的 Host-Only 网段和 VM 地址计划。
+
+做什么实验：
+- 从官方来源获取 Ubuntu/Kali 并验证对应版本 SHA256；
+- 创建专用 Host-Only 网络并关闭 DHCP；
+- 配置 Ubuntu/Kali 静态地址，保持 guest 无 default route；
+- 完成 Host/Ubuntu/Kali 连通性矩阵；
+- 用 `ip route` 与直接 `ping 8.8.8.8` 证明默认公网隔离；
+- 创建 Ubuntu/Kali baseline snapshot。
+
+通关：
+- 能解释 Host-Only 与 NAT 的核心差异；
+- 能证明实验资产互通但默认无公网路由；
+- 能说明为什么真实 WLAN/公司私网不能自动进入实验范围；
+- checkpoint：`s00-l01-complete-v2`。
+
+## S00-L02 — Authorization & Scope
 
 **深度：C1**
 
-学什么：Authorization、Scope、Rules of Engagement；资产、账号、时间窗口、允许动作、禁止动作；证据保存与敏感信息边界。
+学什么：Authorization、Scope、Rules of Engagement；资产、账号、时间窗口、允许动作、禁止动作；deny-by-default 与 allowlist。
 
 写什么：
-- `scope/lab-scope.yaml`：明确允许网段、禁止公网目标、实验所有者、恢复方式；
+- `scope/lab-scope.yaml`：把 S00-L01 实际创建的实验网段加入 allowlist；
+- `scripts/check_lab_target.py`：目标边界检查；
 - `docs/LAB_RULES.md`：课程安全规则。
 
 做什么实验：
-- 给出 6 个目标案例，判断哪些可测、哪些必须拒绝；
-- 修改 scope 后验证边界变化。
+- 给出目标案例，判断哪些可测、哪些必须拒绝；
+- 修改 scope 后验证边界变化；
+- 解释网络地址、IPv4 广播地址和普通主机地址的区别。
 
 通关：
 - 能解释“技术上能做”和“被授权做”的区别；
 - 能写出一份清晰、可执行的测试范围；
-- checkpoint：`s00-l01-complete`。
+- 理解“私网地址”不等于“已授权目标”；
+- checkpoint：`s00-l02-complete-v2`。
 
-## S00-L02 — 安全工作站与工具链
+## S00-L03 — Snapshot / Reset / Recovery
+
+**深度：C1**
+
+学什么：可重复实验、快照、基线、恢复点、变更记录。
+
+写什么：
+- `docs/RESET_GUIDE.md`；
+- `progress/s00/l03-reset-record.md`。
+
+实验：在 S00-L01 baseline 基础上故意修改 Ubuntu 配置，恢复快照并验证服务与网络状态回到基线。
+
+通关：同一恢复流程可重复执行并得到一致结果；checkpoint：`s00-l03-complete-v2`。
+
+## S00-L04 — Workstation & Toolchain
 
 **深度：C1**
 
@@ -120,38 +163,7 @@ Recon + 架构还原、Security Assessment + Attack Path、Code Fix + Hardening 
 
 实验：在 Windows 主机运行环境检查并保存一次工具版本基线。
 
-通关：能说明每个工具解决什么问题；`python scripts/env_check.py` 可重复执行；checkpoint：`s00-l02-complete`。
-
-## S00-L03 — 隔离网络：Host-Only / NAT / Routing
-
-**深度：C2**
-
-学什么：IP、子网、默认网关、Host-Only、NAT、路由、DNS 的边界。
-
-写什么：
-- `docs/network/lab-topology.md`；
-- `scripts/check_lab_target.py`：第一版只接受配置的实验网段。
-
-实验：
-- 主机、Kali、Ubuntu 在隔离网互通；
-- 比较 Host-Only 与 NAT 的路径差异；
-- 验证公网 IP 被目标检查脚本拒绝。
-
-通关：能画出数据包从主机到 VM 的路径；能解释为什么实验网与公司/公网环境隔离；checkpoint：`s00-l03-complete`。
-
-## S00-L04 — Snapshot / Reset / Reproduce
-
-**深度：C1**
-
-学什么：可重复实验、快照、基线、恢复点、变更记录。
-
-写什么：
-- `docs/RESET_GUIDE.md`；
-- `progress/s00/l04-reset-record.md`。
-
-实验：建立 Ubuntu 基线快照；故意改坏配置；恢复快照并验证服务状态回到基线。
-
-通关：同一实验可重复三次得到一致结果；checkpoint：`s00-l04-complete`。
+通关：能说明每个工具解决什么问题；环境检查可重复执行；checkpoint：`s00-l04-complete-v2`。
 
 ## S00-L05 — Baseline Telemetry
 
@@ -165,11 +177,10 @@ Recon + 架构还原、Security Assessment + Attack Path、Code Fix + Hardening 
 
 实验：正常访问服务；保存 PCAP、应用日志和系统侧连接信息；用时间戳把一次正常请求关联起来。
 
-通关：能从“一个请求”指出至少三个可观测位置；checkpoint：`s00-l05-complete`。
-
+通关：能从“一个请求”指出至少三个可观测位置；checkpoint：`s00-l05-complete-v2`。
 ### S00 Boss — Build the Range
 
-交付：scope、拓扑图、两台实验 VM、基线 PCAP/日志、Snapshot/Reset 流程。
+交付：可复现 Cyber Range、scope、拓扑图、两台实验 VM、基线 PCAP/日志、Snapshot/Reset 流程。
 
 Gate：证明环境隔离、通信正常、证据可保存、快照可恢复。
 

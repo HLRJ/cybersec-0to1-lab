@@ -1,4 +1,5 @@
 # S00–S02 Implementation Plan
+> **Superseded notice (2026-09-17):** 本计划中 S00 的旧顺序已被 `2026-09-17-s00-curriculum-restructure-implementation.md` 取代。保留本文仅用于课程设计历史；新的 S00 顺序为 Cyber Range → Scope → Snapshot/Reset → Workstation/Toolchain → Baseline Telemetry。S01/S02 尚未被本次重构替代。
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
