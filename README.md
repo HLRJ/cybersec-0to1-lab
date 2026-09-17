@@ -30,8 +30,8 @@
 ## 从这里开始
 1. 阅读 [课程总纲](CURRICULUM.md)
 2. 阅读 [课程设计规范](docs/CURRICULUM_DESIGN.md)
-3. 查看 [S00–S02 实施计划](docs/superpowers/plans/2026-09-14-s00-s02-implementation.md)
-4. 后续从 S00-L01 开始实际学习
+3. 查看 [S00 课程结构重构设计](docs/superpowers/specs/2026-09-17-s00-curriculum-restructure-design.md)
+4. 从 [S00-L01：Build Your Cyber Range](labs/s00/l01-cyber-range/README.md) 开始实际学习
 
 ## 核心路线
 
