@@ -18,7 +18,7 @@ def run_cli(target: str) -> subprocess.CompletedProcess[str]:
 
 
 def test_cli_allows_lab_target() -> None:
-    result = run_cli("192.168.56.42")
+    result = run_cli("192.168.77.42")
     assert result.returncode == 0
     assert "ALLOW" in result.stdout
     assert "允许" in result.stdout

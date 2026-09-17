@@ -9,7 +9,7 @@
 - Authorization 和 Scope 分别解决什么问题；
 - 为什么“技术上能访问”不等于“有权测试”；
 - 为什么安全工具更适合使用 allowlist；
-- CIDR `192.168.56.0/24` 在 scope 中代表什么；
+- CIDR `192.168.77.0/24` 在 scope 中代表什么；
 - 为什么网络地址和广播地址不应作为普通主机目标。
 
 ## 本课文件
@@ -29,9 +29,9 @@ docs/LAB_RULES.md
 不要先看测试答案。先写下你对下面 6 个目标的预测：`ALLOW` 还是 `DENY`，以及为什么。
 
 1. `127.0.0.1`
-2. `192.168.56.42`
-3. `192.168.56.0`
-4. `192.168.56.255`
+2. `192.168.77.42`
+3. `192.168.77.0`
+4. `192.168.77.255`
 5. `192.168.1.20`
 6. `8.8.8.8`
 
@@ -41,9 +41,9 @@ docs/LAB_RULES.md
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\check_lab_target.py 127.0.0.1
-.\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.56.42
-.\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.56.0
-.\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.56.255
+.\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.77.42
+.\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.77.0
+.\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.77.255
 .\.venv\Scripts\python.exe scripts\check_lab_target.py 192.168.1.20
 .\.venv\Scripts\python.exe scripts\check_lab_target.py 8.8.8.8
 ```
@@ -68,7 +68,7 @@ docs/LAB_RULES.md
 
 ## Exercise 4：修改范围并验证
 
-先不要直接改。预测：如果把 `scope/lab-scope.yaml` 中的 `192.168.56.0/24` 改成 `192.168.99.0/24`，哪些测试会失败？为什么？
+先不要直接改。预测：如果把 `scope/lab-scope.yaml` 中的 `192.168.77.0/24` 改成 `192.168.99.0/24`，哪些测试会失败？为什么？
 
 然后再修改、运行测试、观察失败，并把配置恢复回来。恢复后测试应重新通过。
 
@@ -78,7 +78,7 @@ docs/LAB_RULES.md
 
 1. 6 个目标的 `ALLOW/DENY` 预测与实际结果；
 2. 你对 `/24` 的理解；
-3. 为什么 `192.168.56.0` 和 `192.168.56.255` 被拒绝；
+3. 为什么 `192.168.77.0` 和 `192.168.77.255` 被拒绝；
 4. 修改为 `192.168.99.0/24` 后，哪些测试失败；
 5. 你认为“只禁止公网”与“只允许明确实验网段”哪种策略更安全，为什么。
 
