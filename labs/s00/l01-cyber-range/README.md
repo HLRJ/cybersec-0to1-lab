@@ -132,6 +132,10 @@ Disk: 40 GB
 Network: Custom / VMnet2
 ```
 
+![Ubuntu 虚拟机绑定到专用 VMnet2](images/03-ubuntu-vmnet2-adapter.webp)
+
+> 真实截图：Ubuntu Target 的网络适配器绑定到课程专用 VMnet2。
+
 安装 Ubuntu Server 时把实验网卡设为静态地址，例如：
 
 ```text
@@ -139,6 +143,10 @@ IPv4: 192.168.77.10/24
 Gateway: 留空
 DNS: 留空
 ```
+
+![Ubuntu 安装阶段配置静态 IPv4](images/04-ubuntu-static-ip.webp)
+
+> 真实截图：Ubuntu Target 使用静态地址，并故意不配置默认网关与 DNS。
 
 课程参考环境同时安装 OpenSSH Server，方便从 Windows 主机登录实验 VM。
 
@@ -149,6 +157,10 @@ ip addr
 ip route
 sudo systemctl status ssh --no-pager
 ```
+
+![Ubuntu 运行态网络与 SSH 验证](images/05-ubuntu-runtime-validation.webp)
+
+> 真实截图：Ubuntu 获得实验网地址、能到达 Windows Host，并确认 SSH 服务运行。
 
 你应该看到实验网地址，但**不应该看到 `default via ...`**。
 
@@ -178,6 +190,10 @@ Network: Custom / VMnet2
 ```bash
 nmcli connection show
 ```
+
+![Kali 初始网络状态与 NetworkManager 连接](images/06-kali-initial-network-state.webp)
+
+> 真实截图：Kali 导入后的初始网卡状态与 NetworkManager connection，为后续静态地址配置建立基线。
 
 参考环境连接名为 `Wired connection 1`：
 
@@ -237,6 +253,10 @@ ping 192.168.77.20
 ```
 
 参考环境六个方向都验证通过。
+
+![Ubuntu 到 Kali 的实验网连通性验证](images/07-ubuntu-to-kali-connectivity.webp)
+
+> 真实截图：Ubuntu Target 到 Kali Tester 的 ICMP 连通性验证。
 
 ## Step 9：证明“默认隔离”，不要只凭感觉
 
