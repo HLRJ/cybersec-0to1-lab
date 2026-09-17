@@ -67,6 +67,10 @@ Get-FileHash .\ubuntu-26.04.1-live-server-amd64.iso -Algorithm SHA256
 Get-FileHash .\kali-linux-2026.2-vmware-amd64.7z -Algorithm SHA256
 ```
 
+![实际环境中的 SHA256 校验与 VMnet2 主机地址](images/01-sha256-and-host-adapter.webp)
+
+> 真实截图：本课程开发环境中完成 Ubuntu/Kali SHA256 校验后，同时确认 Windows Host 的 VMnet2 地址为 `192.168.77.1/24`。
+
 **不要把上面的历史 hash 当成未来版本的固定答案。** 每次下载都应查对应版本官方发布的 checksum，再和本地结果比较。
 
 SHA256 匹配证明“本地文件与所比较的 checksum 对应文件一致”；如果需要进一步确认 checksum 发布者身份，还应验证官方提供的签名。二者不是同一个问题。
@@ -103,6 +107,10 @@ Mask: 255.255.255.0
 Connect a host virtual adapter: ON
 Use local DHCP service: OFF
 ```
+
+![VMware Virtual Network Editor 中的 VMnet2 Host-Only 配置](images/02-vmnet2-host-only.webp)
+
+> 真实截图：`VMnet2` 使用 Host-Only，子网为 `192.168.77.0/24`，主机虚拟适配器开启，VMware DHCP 关闭。
 
 DHCP 关闭后，我们后续可以明确知道每台实验资产的地址，不依赖动态分配。
 
@@ -270,6 +278,10 @@ Snapshot 的意义不是“备份一切”，而是给实验建立一个可快�
 ```text
 virtualHW.version = "8"
 ```
+
+![Kali 预构建 VM 的旧虚拟硬件兼容级别](images/08-kali-legacy-hardware-compatibility.webp)
+
+> 真实排障截图（已裁剪脱敏）：该预构建 VM 显示为较旧的 Workstation 8.x 虚拟硬件兼容级别。
 
 通过 VMware：
 
