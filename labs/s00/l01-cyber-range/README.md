@@ -67,6 +67,10 @@ Get-FileHash .\ubuntu-26.04.1-live-server-amd64.iso -Algorithm SHA256
 Get-FileHash .\kali-linux-2026.2-vmware-amd64.7z -Algorithm SHA256
 ```
 
+![实际环境中的 SHA256 校验与 VMnet2 主机地址](images/01-sha256-and-host-adapter.webp)
+
+> 真实截图：本课程开发环境中完成 Ubuntu/Kali SHA256 校验后，同时确认 Windows Host 的 VMnet2 地址为 `192.168.77.1/24`。
+
 **不要把上面的历史 hash 当成未来版本的固定答案。** 每次下载都应查对应版本官方发布的 checksum，再和本地结果比较。
 
 SHA256 匹配证明“本地文件与所比较的 checksum 对应文件一致”；如果需要进一步确认 checksum 发布者身份，还应验证官方提供的签名。二者不是同一个问题。
@@ -104,6 +108,10 @@ Connect a host virtual adapter: ON
 Use local DHCP service: OFF
 ```
 
+![VMware Virtual Network Editor 中的 VMnet2 Host-Only 配置](images/02-vmnet2-host-only.webp)
+
+> 真实截图：`VMnet2` 使用 Host-Only，子网为 `192.168.77.0/24`，主机虚拟适配器开启，VMware DHCP 关闭。
+
 DHCP 关闭后，我们后续可以明确知道每台实验资产的地址，不依赖动态分配。
 
 在参考环境中，Windows 的 VMnet2 适配器为：
@@ -124,6 +132,10 @@ Disk: 40 GB
 Network: Custom / VMnet2
 ```
 
+![Ubuntu 虚拟机绑定到专用 VMnet2](images/03-ubuntu-vmnet2-adapter.webp)
+
+> 真实截图：Ubuntu Target 的网络适配器绑定到课程专用 VMnet2。
+
 安装 Ubuntu Server 时把实验网卡设为静态地址，例如：
 
 ```text
@@ -131,6 +143,10 @@ IPv4: 192.168.77.10/24
 Gateway: 留空
 DNS: 留空
 ```
+
+![Ubuntu 安装阶段配置静态 IPv4](images/04-ubuntu-static-ip.webp)
+
+> 真实截图：Ubuntu Target 使用静态地址，并故意不配置默认网关与 DNS。
 
 课程参考环境同时安装 OpenSSH Server，方便从 Windows 主机登录实验 VM。
 
@@ -141,6 +157,10 @@ ip addr
 ip route
 sudo systemctl status ssh --no-pager
 ```
+
+![Ubuntu 运行态网络与 SSH 验证](images/05-ubuntu-runtime-validation.webp)
+
+> 真实截图：Ubuntu 获得实验网地址、能到达 Windows Host，并确认 SSH 服务运行。
 
 你应该看到实验网地址，但**不应该看到 `default via ...`**。
 
@@ -170,6 +190,10 @@ Network: Custom / VMnet2
 ```bash
 nmcli connection show
 ```
+
+![Kali 初始网络状态与 NetworkManager 连接](images/06-kali-initial-network-state.webp)
+
+> 真实截图：Kali 导入后的初始网卡状态与 NetworkManager connection，为后续静态地址配置建立基线。
 
 参考环境连接名为 `Wired connection 1`：
 
@@ -230,6 +254,10 @@ ping 192.168.77.20
 
 参考环境六个方向都验证通过。
 
+![Ubuntu 到 Kali 的实验网连通性验证](images/07-ubuntu-to-kali-connectivity.webp)
+
+> 真实截图：Ubuntu Target 到 Kali Tester 的 ICMP 连通性验证。
+
 ## Step 9：证明“默认隔离”，不要只凭感觉
 
 Ubuntu 与 Kali 都执行：
@@ -270,6 +298,10 @@ Snapshot 的意义不是“备份一切”，而是给实验建立一个可快�
 ```text
 virtualHW.version = "8"
 ```
+
+![Kali 预构建 VM 的旧虚拟硬件兼容级别](images/08-kali-legacy-hardware-compatibility.webp)
+
+> 真实排障截图（已裁剪脱敏）：该预构建 VM 显示为较旧的 Workstation 8.x 虚拟硬件兼容级别。
 
 通过 VMware：
 
