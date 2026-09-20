@@ -25,7 +25,8 @@ def _run_version(command: tuple[str, ...]) -> tuple[str, str]:
             check=False,
             encoding="utf-8",
             errors="replace",
-        )    except (OSError, subprocess.TimeoutExpired) as exc:
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
         return "WARN", str(exc)
 
     output = (proc.stdout or proc.stderr).strip()
@@ -71,7 +72,8 @@ TOOLS = (
             r"%ProgramFiles(x86)%\VMware\VMware Workstation\vmware.exe",
             r"%ProgramFiles%\VMware\VMware Workstation\vmware.exe",
         ),
-    )    ToolCheck(
+    ),
+    ToolCheck(
         "Burp Suite",
         candidates=(
             r"%LOCALAPPDATA%\Programs\BurpSuiteCommunity\BurpSuiteCommunity.exe",
