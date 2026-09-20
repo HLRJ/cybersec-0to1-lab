@@ -171,3 +171,14 @@ MARKER=EXISTS
 2. marker 的 `ls`、`cat`、`sha256sum` 和 `MARKER=EXISTS` 输出。
 
 确认安全 checkpoint 和 mutation 都存在之后，我们才执行第一次 Revert。
+### 常见失误：先 Mutation，后想起 Snapshot
+
+如果已经执行了 mutation，却发现还没有创建 safety snapshot：
+
+- 不要立刻回到更老的 snapshot；
+- 先判断 mutation 是否完全已知、是否可以安全手工撤销；
+- 对于本课这种单一 marker 文件，可以先删除 marker，并重新验证 Current State；
+- 再创建 `S00-L03-PRE-MUTATION`；
+- 然后重新执行 mutation。
+
+这条规则背后的重点是：**Snapshot 的顺序本身也是实验设计的一部分。**

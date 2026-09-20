@@ -63,3 +63,34 @@ MARKER=ABSENT
 ## Round 2 — Safety Checkpoint / Mutation
 
 下一轮先创建 `S00-L03-PRE-MUTATION`，再制造 marker 文件。确认 mutation 已被观察到后，才进入 Revert。
+## Round 2 — Mutation 先于 Safety Snapshot（真实学习者失误）
+
+学习者实际执行顺序出现了一个重要偏差：
+
+```text
+原计划：PRE-MUTATION snapshot → mutation
+实际：   mutation → 发现尚未创建 PRE-MUTATION snapshot
+```
+
+Snapshot Manager 截图显示仍为：
+
+```text
+S00-UBUNTU-BASELINE → 快照 2 → You Are Here
+```
+
+marker mutation 已成功：
+
+```text
+/home/cyberlab/s00-l03-marker.txt
+content: S00-L03 harmless mutation
+sha256: cf3da52f7632ceba64e021919198c4d17df6918bd3c4f9edc86e57804e6742af
+MARKER=EXISTS
+```
+
+### 纠正策略
+
+由于本轮 mutation 完全已知且只创建了一个 marker 文件，不需要冒险回到旧 snapshot。
+
+先手工撤销这一个已知 mutation，重新验证 marker 不存在以及网络/SSH 仍保持 Current State，然后再创建 `S00-L03-PRE-MUTATION`。
+
+这也形成一条课程规则：**Checkpoint 必须在 Mutation 之前创建并验证存在；不要把“准备做 snapshot”当成“已经做了 snapshot”。**
