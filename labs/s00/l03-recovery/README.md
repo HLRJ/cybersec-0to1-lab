@@ -109,3 +109,65 @@ BASELINE EVIDENCE
 ```text
 s00-l03-complete-v2
 ```
+## 第二轮：建立安全 Checkpoint，再制造可观察变化
+
+第一轮真实观察得到的 Snapshot 树是：
+
+```text
+S00-UBUNTU-BASELINE
+        ↓
+      快照 2
+        ↓
+     You Are Here
+```
+
+因此本轮**不直接 Revert 到 baseline**。当前 working state 可能包含 `快照 2` 之后的正常变化。
+
+### Step 4：创建本课专用安全 Snapshot
+
+在当前 `You Are Here` 位置创建：
+
+```text
+S00-L03-PRE-MUTATION
+```
+
+建议描述：
+
+```text
+Known-good state before S00-L03 harmless mutation
+```
+
+创建后再次打开 Snapshot Manager，确认 `You Are Here` 位于这个新 snapshot 之后。
+
+**此时仍不要 Revert 或 Delete 任何 snapshot。**
+### Step 5：制造一个无害、可验证的 Mutation
+
+在 Ubuntu 执行：
+
+```bash
+printf 'S00-L03 harmless mutation\n' > ~/s00-l03-marker.txt
+ls -l ~/s00-l03-marker.txt
+cat ~/s00-l03-marker.txt
+sha256sum ~/s00-l03-marker.txt
+```
+
+然后再次执行：
+
+```bash
+test -e ~/s00-l03-marker.txt && echo "MARKER=EXISTS" || echo "MARKER=ABSENT"
+```
+
+本轮期望：
+
+```text
+MARKER=EXISTS
+```
+
+### 第二轮停止点
+
+把下面两项发回来后再继续：
+
+1. 创建 `S00-L03-PRE-MUTATION` 后的 Snapshot Manager 截图；
+2. marker 的 `ls`、`cat`、`sha256sum` 和 `MARKER=EXISTS` 输出。
+
+确认安全 checkpoint 和 mutation 都存在之后，我们才执行第一次 Revert。

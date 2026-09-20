@@ -36,3 +36,26 @@ S00-KALI-BASELINE
 ```
 
 这些名字来自课程真实搭建过程，仅作为参考实现。
+## 第一轮实验得到的关键认识
+
+### Snapshot 不等于 Backup
+
+Snapshot 是某个时间点的 VM 状态检查点，但通常依赖原虚拟磁盘和后续增量链。
+
+Backup 的范围可以很小，也可以很大：既可以是一个配置文件副本，也可以是完整磁盘或整机备份。判断关键不是“备份是不是整个系统”，而是它是否作为可恢复副本被独立保存和管理。
+
+因此：
+
+- snapshot 适合短期实验回滚；
+- backup 适合独立恢复与长期保护；
+- 不能因为“有 snapshot”就认为已经完成灾备。
+
+### Revert 前先识别 Working State
+
+真实环境中当前树为：
+
+```text
+S00-UBUNTU-BASELINE → 快照 2 → You Are Here
+```
+
+直接回旧 baseline 前，必须先确认当前 working state 是否包含仍需保留的变化。课程因此先增加 `S00-L03-PRE-MUTATION`，把本轮实验风险限定在一个明确 checkpoint 之后。
