@@ -121,6 +121,10 @@ S00-UBUNTU-BASELINE
      You Are Here
 ```
 
+![S00-L03 开始前的真实 Snapshot 树](images/01-snapshot-tree-before-l03.webp)
+
+> 真实截图：课程开始时 `You Are Here` 位于 `快照 2` 之后，因此没有贸然回到旧 baseline。
+
 因此本轮**不直接 Revert 到 baseline**。当前 working state 可能包含 `快照 2` 之后的正常变化。
 
 ### Step 4：创建本课专用安全 Snapshot
@@ -138,6 +142,10 @@ Known-good state before S00-L03 harmless mutation
 ```
 
 创建后再次打开 Snapshot Manager，确认 `You Are Here` 位于这个新 snapshot 之后。
+
+![建立 S00-L03-PRE-MUTATION 后的 Snapshot 树](images/02-pre-mutation-checkpoint.webp)
+
+> 真实截图：`S00-L03-PRE-MUTATION` 已位于 working state 之前，后续 mutation 才有明确恢复点。
 
 **此时仍不要 Revert 或 Delete 任何 snapshot。**
 ### Step 5：制造一个无害、可验证的 Mutation
@@ -224,14 +232,28 @@ ip route
 此时停下来保留证据，再 Revert 到 `S00-L03-PRE-MUTATION`。
 
 Revert 后重新 SSH，并验证 marker 消失、cron 恢复 active、SSH 与实验网仍正常。
-## Gate：S00-L03 最终检查
+## Gate：S00-L03 通过结果
 
-当前真实实验已经完成两次对同一 checkpoint 的 Revert：第一次恢复 marker，第二次同时恢复 marker 与 cron。
+本课真实实验已经对同一个 `S00-L03-PRE-MUTATION` 完成两次独立 Revert：第一次恢复 marker，第二次同时恢复 marker 与 cron，并再次验证 SSH、IP、route 与 Host-Only 连通性。
 
-最后只需要完成知识 Gate：
+知识结论：
 
-1. 用自己的话解释：为什么 Snapshot 不能替代 Backup？
-2. 为什么 Revert 后不能只看 VMware 界面显示成功，而必须重新检查 Guest OS？
-3. 如果后续做漏洞实验，你会在什么时候创建 snapshot，什么时候创建 backup？
+1. **Snapshot 不能替代 Backup。** Snapshot 适合短期、快速实验回滚，通常依赖原虚拟磁盘和 snapshot chain；Backup 应作为独立恢复副本管理，适合长期保护与灾难恢复。
+2. **Revert 后必须验证 Guest OS。** VMware UI 只说明 hypervisor 执行了恢复动作，不能证明文件、服务、网络和业务状态都符合预期。
+3. **漏洞实验前创建 snapshot，重要资产另做 backup。** 在 destructive experiment 前从已验证的 known-good state 创建短期 checkpoint；对无法轻易重建、需要长期保存或需要脱离原 VM 独立恢复的数据，使用 backup。
 
-这三个问题回答通过后，即可进入课程收尾、PR、CI 与 `s00-l03-complete-v2` checkpoint。
+Gate 证据：
+
+- `MARKER=EXISTS → Revert → MARKER=ABSENT`；
+- `cron=inactive → Revert → cron=active`；
+- `ssh=active`；
+- `192.168.77.10/24` 保持不变；
+- 无 default route；
+- Windows Host `192.168.77.1` 连通，0% packet loss；
+- 同一恢复流程重复执行得到一致结果。
+
+本课 checkpoint：
+
+```text
+s00-l03-complete-v2
+```

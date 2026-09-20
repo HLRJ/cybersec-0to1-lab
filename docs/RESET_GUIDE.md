@@ -18,15 +18,17 @@ Known State
 
 ## Snapshot 与 Backup
 
-本节暂不直接给结论。
+Snapshot 是为短期回滚服务的时间点检查点。VMware snapshot 通常依赖原虚拟磁盘以及 snapshot chain，因此它并不是一个可以脱离原 VM 独立保存的长期灾备副本。
 
-先在实际恢复实验完成后，根据观察补充：
+Backup 可以是文件级、目录级、磁盘级或整机级；核心在于它作为独立恢复副本被保存、验证和管理。
 
-- snapshot 保存了什么；
-- snapshot 依赖哪些虚拟磁盘状态；
-- revert 会改变什么；
-- delete snapshot 实际意味着什么；
-- 为什么长期灾备不能只依赖 snapshot。
+因此本课程采用下面的判断：
+
+- destructive experiment 前：优先创建 snapshot；
+- 需要快速重复实验：使用 known-good snapshot / checkpoint；
+- 无法轻易重建的重要数据：另做 backup；
+- 长期保存或灾难恢复：不能只依赖 snapshot；
+- Revert 后：必须重新验证 Guest OS，而不是只看 VMware UI。
 
 ## 当前参考 Baseline
 
