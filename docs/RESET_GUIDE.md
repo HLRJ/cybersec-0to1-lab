@@ -59,3 +59,19 @@ S00-UBUNTU-BASELINE → 快照 2 → You Are Here
 ```
 
 直接回旧 baseline 前，必须先确认当前 working state 是否包含仍需保留的变化。课程因此先增加 `S00-L03-PRE-MUTATION`，把本轮实验风险限定在一个明确 checkpoint 之后。
+## Revert 后为什么 SSH 会断开
+
+如果通过 SSH 操作实验 VM，执行 VMware Revert 时原 SSH 会话通常会断开。
+
+原因不是 SSH 配置损坏，而是虚拟机状态发生回滚，原 TCP 会话两端的运行状态已经不再连续。
+
+因此恢复验证应包含：
+
+```text
+Revert
+→ 等待 Guest 恢复
+→ 重新建立 SSH
+→ 检查 hostname / IP / route / service / mutation evidence
+```
+
+“SSH 重新连接成功”可以作为 service-level evidence，但不能替代 Guest 内部状态检查。

@@ -94,3 +94,47 @@ MARKER=EXISTS
 先手工撤销这一个已知 mutation，重新验证 marker 不存在以及网络/SSH 仍保持 Current State，然后再创建 `S00-L03-PRE-MUTATION`。
 
 这也形成一条课程规则：**Checkpoint 必须在 Mutation 之前创建并验证存在；不要把“准备做 snapshot”当成“已经做了 snapshot”。**
+## Round 3 — First Revert / Recovery Verification
+
+### Revert 前
+
+```text
+snapshot: S00-L03-PRE-MUTATION
+marker: MARKER=EXISTS
+marker sha256: cf3da52f7632ceba64e021919198c4d17df6918bd3c4f9edc86e57804e6742af
+```
+
+### 执行 Revert 时的现象
+
+VMware 恢复 `S00-L03-PRE-MUTATION` 后，原 SSH 会话断开：
+
+```text
+Socket error Event: 32 Error: 10053
+Connection closed by foreign host
+```
+
+这是符合预期的现象：虚拟机运行状态/网络状态被恢复时，已有 TCP/SSH 会话不会跨 Revert 保持。
+
+随后重新连接 `192.168.77.10:22` 成功。
+
+### Revert 后证据
+
+```text
+hostname: cyberlab-ubuntu
+ens33: UP 192.168.77.10/24
+route: 192.168.77.0/24 dev ens33 proto kernel scope link src 192.168.77.10
+ssh: active
+marker: MARKER=ABSENT
+ping 192.168.77.1: 2/2 received, 0% packet loss
+```
+
+### 结论
+
+- 文件系统状态确实回到了 `S00-L03-PRE-MUTATION`；
+- 实验网静态 IPv4 保持正确；
+- 没有出现 default route；
+- SSH 服务恢复为 active；
+- Windows Host 仍可从实验网访问；
+- 因此不能只凭 VMware 显示“已恢复”判断成功，必须由 Guest OS 内部证据完成 verification。
+
+登录 banner 中访问 `changelogs.ubuntu.com` 失败，与“无 Internet default route”的设计一致，但这只能作为旁证，路由表才是主要证据。
