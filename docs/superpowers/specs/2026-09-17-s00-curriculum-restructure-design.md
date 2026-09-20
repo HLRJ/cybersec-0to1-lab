@@ -1,43 +1,57 @@
-﻿# S00 Curriculum Restructure Design
+# S00 课程结构重构设计
 
-**Date:** 2026-09-17
+**日期：** 2026-09-17
 
-## Problem
+> 本文件遵循仓库“核心课程稳定前只维护中文版”的语言策略。代码、命令、路径、协议字段与 Git tag 保持英文原样。
 
-The first S00 lesson was originally implemented as Authorization & Scope before the learner had created any real lab assets. During the first learner run, this caused a false dependency: the repository assumed an imaginary VMware subnet before a Cyber Range existed.
+## 问题
 
-The corrected teaching principle is: **build and verify the lab assets first, then define Scope from the real authorized assets.**
+最初的 S00 第一课被实现为 Authorization & Scope，但学习者当时还没有创建任何真实实验资产。
 
-## Decision
+在第一次学习者实跑过程中，这暴露出一个错误依赖：仓库先假定了一个并不存在的 VMware 实验网段，再要求学习者围绕这个虚构网段定义授权范围。
 
-Reorder Stage 00 so the learner first builds an isolated VMware Cyber Range, then learns authorization and Scope against that real environment.
+修正后的教学原则是：
+
+**先建立并验证真实实验资产，再基于这些实际、已授权的资产定义 Scope。**
+
+## 决策
+
+重新调整 Stage 00 的顺序：先让学习者搭建一个隔离的 VMware Cyber Range，再针对这套真实环境学习授权与 Scope。
 
 ### S00-L01 — Build Your Cyber Range
 
-The repository will document the reproducible environment-building flow used in the learner run:
+仓库需要记录并教学学习者实跑时采用的、可复现的环境搭建流程：
 
-- download Ubuntu Server and Kali from official sources;
-- verify SHA256 hashes against the official published checksums;
-- create a dedicated VMware Host-Only network with DHCP disabled;
-- plan addresses for the Windows host, Ubuntu target, and Kali tester;
-- install/configure Ubuntu and import/configure Kali;
-- keep Ubuntu/Kali without a default Internet route;
-- verify the three-node connectivity matrix;
-- verify Internet isolation using an IP target such as `8.8.8.8` rather than a DNS name;
-- create baseline snapshots after validation;
-- capture troubleshooting learned during the run, including the Kali invisible-cursor issue caused in this case by old VMware virtual hardware compatibility.
+- 从官方来源下载 Ubuntu Server 与 Kali；
+- 使用官方发布的 checksum 校验 SHA256；
+- 创建一个专用 VMware Host-Only 网络，并关闭 DHCP；
+- 为 Windows Host、Ubuntu Target 与 Kali Tester 规划地址；
+- 安装/配置 Ubuntu，并导入/配置 Kali；
+- 默认不给 Ubuntu/Kali 配置 Internet default route；
+- 验证三节点连通性矩阵；
+- 使用 `8.8.8.8` 这类 IP 地址而不是 DNS 名称验证 Internet 隔离；
+- 验证通过后创建 baseline snapshot；
+- 记录真实学习过程中的排障经验，包括本次 Kali 光标不可见问题：在这个具体案例中，根因是旧的 VMware virtual hardware compatibility。
 
-The learner's concrete environment is `192.168.77.0/24`, but the public lesson must teach the learner to discover/create and record their own lab subnet instead of assuming `.77` universally.
+学习者本次实际环境为 `192.168.77.0/24`，但公开课程必须教学习者自行发现、创建并记录自己的实验网段，而不是把 `.77` 当作所有人的固定配置。
 
 ### S00-L02 — Authorization & Scope
 
-Move the existing Scope lesson from `labs/s00/l01-scope/` to `labs/s00/l02-scope/`.
+把现有 Scope 课程从：
 
-The lesson must explicitly consume the learner's verified Cyber Range subnet from L01. The sample repository configuration may show `192.168.77.0/24` as the reference implementation, but the prose must state that authorization comes from the learner's actual lab design, not from RFC1918/private-address status.
+`labs/s00/l01-scope/`
 
-The deny-by-default target guard and its automated tests remain conceptually unchanged.
+移动为：
 
-## Revised Stage 00 Sequence
+`labs/s00/l02-scope/`
+
+本课必须明确使用学习者在 L01 中已经验证过的 Cyber Range 网段。
+
+仓库示例配置可以继续使用 `192.168.77.0/24` 作为参考实现，但正文必须说明：授权来自学习者真实、明确设计的实验环境，而不是因为目标属于 RFC1918/private address 就天然获得授权。
+
+deny-by-default 的目标校验逻辑及其自动化测试在概念上保持不变。
+
+## 调整后的 Stage 00 顺序
 
 1. **S00-L01 — Build Your Cyber Range**
 2. **S00-L02 — Authorization & Scope**
@@ -45,57 +59,71 @@ The deny-by-default target guard and its automated tests remain conceptually unc
 4. **S00-L04 — Workstation & Toolchain**
 5. **S00-L05 — Baseline Telemetry**
 
-No intentional vulnerability is introduced in S00.
+S00 不引入任何故意漏洞。
 
-## Repository Changes
+## 仓库改动
 
-Expected implementation changes:
+预期实现改动：
 
-- create `labs/s00/l01-cyber-range/README.md`;
-- move/rename `labs/s00/l01-scope/` to `labs/s00/l02-scope/`;
-- update `README.md`, `CURRICULUM.md`, `docs/CURRICULUM_DESIGN.md`, and `docs/LAB_RULES.md` so numbering and prerequisites agree;
-- preserve `scope/lab-scope.yaml`, `scripts/check_lab_target.py`, and the existing Scope tests, changing only references needed by the new lesson number;
-- keep CI running the automated Scope tests.
+- 创建 `labs/s00/l01-cyber-range/README.md`；
+- 将 `labs/s00/l01-scope/` 移动/重命名为 `labs/s00/l02-scope/`；
+- 更新 `README.md`、`CURRICULUM.md`、`docs/CURRICULUM_DESIGN.md` 与 `docs/LAB_RULES.md`，确保编号和前置关系一致；
+- 保留 `scope/lab-scope.yaml`、`scripts/check_lab_target.py` 与现有 Scope tests，只修改因课程编号变化而需要调整的引用；
+- CI 继续运行自动化 Scope tests。
 
 ## S00-L01 Gate
 
-A learner passes L01 only after they can provide evidence that:
+只有当学习者能够提供以下证据时，才算通过 L01：
 
-- the host, Ubuntu, and Kali are on the dedicated lab network and mutually reachable;
-- Ubuntu and Kali have no default route to the Internet;
-- `ping` or equivalent to an external IP fails because there is no route;
-- baseline snapshots exist for the lab VMs;
-- the learner can explain why Host-Only plus no default route reduces accidental target exposure.
+- Windows Host、Ubuntu 与 Kali 都位于专用实验网络中，并且能够按计划互通；
+- Ubuntu 与 Kali 都没有通往 Internet 的 default route；
+- 对外部 IP 执行 `ping` 或等价测试时，因为没有路由而失败；
+- 实验 VM 已建立 baseline snapshot；
+- 学习者能够解释为什么 Host-Only + 无 default route 能降低误触非授权目标的风险。
 
-## Checkpoint and Tag Policy
+## Checkpoint 与 Tag 策略
 
-The already-pushed tag `s00-l01-complete` currently points to the old Scope lesson and is therefore semantically stale after this restructure.
+已经推送到公开仓库的 `s00-l01-complete` 指向重构前的旧 Scope 课程，因此在新的课程结构下语义已经过时。
 
-Do **not** silently force-move or rewrite the public tag. Preserve it as historical evidence. The restructure will introduce new unambiguous checkpoint tags after the corrected lessons are completed, using a versioned suffix if necessary (for example `s00-l01-complete-v2` and `s00-l02-complete-v2`). The exact final tag names will be chosen during implementation and documented in the PR.
+**不要**静默 force-move、重写或删除这个公开 tag。它应保留为历史记录。
 
-## Troubleshooting Content to Preserve
+重构完成后，为修正后的课程创建新的、语义清晰的 checkpoint tag；必要时使用版本后缀，例如：
 
-The L01 lesson should include concise troubleshooting notes derived from the real learner run:
+- `s00-l01-complete-v2`
+- `s00-l02-complete-v2`
 
-- official ISO/archive hash verification before installation;
-- VMware Host-Only adapter versus NAT distinction;
-- DHCP-off static addressing;
-- Ubuntu static address with gateway/DNS intentionally blank for isolation;
-- Kali NetworkManager static address with `ipv4.never-default yes`;
-- SSH reachability as a useful service-level validation;
-- Kali invisible mouse cursor: in this learner run, `open-vm-tools` was installed and disabling 3D acceleration did not fix it; upgrading the imported VM from old virtual hardware compatibility (`virtualHW.version = "8"`) resolved the issue. Present this as a case-specific root cause, not a universal rule.
+最终 tag 名称在实现阶段确定，并在 PR 中记录。
 
-## Non-Goals
+## 需要保留的排障内容
 
-This restructure does not add vulnerable services, scanning exercises, exploitation, Active Directory, or Internet-facing targets. It does not make the learner's physical LAN part of Scope.
+L01 应保留来自真实学习过程的简洁排障说明：
 
-## Acceptance Criteria
+- 安装前先校验官方 ISO/archive 的 hash；
+- 区分 VMware Host-Only adapter 与 NAT；
+- 关闭 DHCP 后使用静态地址；
+- Ubuntu 为了隔离，静态地址配置时故意留空 gateway/DNS；
+- Kali 通过 NetworkManager 配置静态地址，并使用 `ipv4.never-default yes`；
+- SSH 可作为 service-level validation 的一个有用检查项；
+- Kali 鼠标光标不可见：在本次学习环境中，`open-vm-tools` 已安装，关闭 3D acceleration 也没有解决；把导入 VM 从旧的 virtual hardware compatibility（`virtualHW.version = "8"`）升级后问题消失。该结论必须作为本次案例的特定根因，而不能写成通用规律。
 
-The restructure is complete when:
+## 非目标
 
-- every Stage 00 document agrees on the new L01/L02 numbering;
-- the environment-building lesson is reproducible without relying on this chat history;
-- the public lesson does not hard-code `192.168.77.0/24` as a mandatory learner subnet;
-- Scope remains deny-by-default and tests still pass;
-- CI passes on the pull request;
-- no old lesson path or wording incorrectly claims Scope is S00-L01.
+本次重构不包含以下内容：
+
+- vulnerable services；
+- scanning exercises；
+- exploitation；
+- Active Directory；
+- Internet-facing targets；
+- 把学习者的物理 LAN 纳入 Scope。
+
+## 验收标准
+
+当以下条件全部满足时，本次重构才算完成：
+
+- 所有 Stage 00 文档都一致采用新的 L01/L02 编号；
+- 环境搭建课程可以脱离本次聊天记录独立复现；
+- 公开课程不会把 `192.168.77.0/24` 写成所有学习者必须使用的固定网段；
+- Scope 继续保持 deny-by-default，并且 tests 通过；
+- PR 上 CI 通过；
+- 不再存在旧路径或旧文案错误地声称 Scope 是 S00-L01。
