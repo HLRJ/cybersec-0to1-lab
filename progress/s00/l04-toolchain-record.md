@@ -149,3 +149,33 @@ pyreadline: not installed in project venv
 结论：项目环境与全局 Miniconda `site-packages` 成功隔离；无需卸载用户全局 `pyreadline` 即可恢复课程测试。
 
 pip 提示自身存在新版本，但当前依赖安装与测试均成功，因此本课不为追求最新版本而升级 pip。
+## Round 5 — SSH / TShark / VMware Evidence
+
+### OpenSSH
+
+```text
+ssh cyberlab@192.168.77.10
+hostname: cyberlab-ubuntu
+ens33: 192.168.77.10/24
+ssh service: active
+```
+
+结论：Windows 宿主机能够通过 OpenSSH 管理 Ubuntu 实验机。
+
+### TShark / Npcap
+
+```text
+TShark 4.4.0
+Npcap 1.80
+VMware Network Adapter VMnet2 可被枚举为 capture interface
+```
+
+真实输出中 VMnet2 当时编号为 6，但接口编号不是稳定标识，后续课程按接口名称识别，不把数字写死。
+
+### VMware Workstation
+
+```text
+17.6.0.24238078
+```
+
+结论：虚拟化平台版本可以从 Windows 注册表稳定读取并记录。

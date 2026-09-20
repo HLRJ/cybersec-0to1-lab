@@ -169,3 +169,35 @@ test suite:    17 passed
 而不是假设全局 `python -m pytest` 一定可靠。
 
 `.venv/` 已被 `.gitignore` 忽略，不进入版本控制。
+## 第三轮结果：关键职责验证通过
+
+真实验证结果：
+
+- Git：feature branch 与远端 tracking 状态可见；
+- Python：repo-local `.venv` 中 17 个测试通过；
+- OpenSSH：Windows → `cyberlab-ubuntu` 远程命令执行成功；
+- TShark：4.4.0 可运行，Npcap 1.80 正常；
+- Capture Interfaces：能够看到 `VMware Network Adapter VMnet2`；
+- VMware Workstation：版本 `17.6.0.24238078` 可追踪。
+
+### Capture Interface 不要写死编号
+
+`tshark -D` 中 VMnet2 本次显示为接口 6，但接口序号可能因为系统、适配器或启动顺序变化。
+
+后续课程应优先按描述识别：
+
+```text
+VMware Network Adapter VMnet2
+```
+
+而不是假定永远使用 `-i 6`。
+
+## 最终 Gate
+
+回答三个问题即可：
+
+1. 为什么项目测试应该优先使用 repo-local `.venv`，而不是直接依赖全局 Python 环境？
+2. `tshark -D` 里的 `VMnet2` 为什么比 `WLAN` 更适合后续 Cyber Range 抓包实验？
+3. 为什么不能把当前的 TShark 接口编号 `6` 永久写进课程脚本？
+
+回答通过后进入 PR / CI / merge，并创建 `s00-l04-complete-v2`。
