@@ -224,3 +224,14 @@ ip route
 此时停下来保留证据，再 Revert 到 `S00-L03-PRE-MUTATION`。
 
 Revert 后重新 SSH，并验证 marker 消失、cron 恢复 active、SSH 与实验网仍正常。
+## Gate：S00-L03 最终检查
+
+当前真实实验已经完成两次对同一 checkpoint 的 Revert：第一次恢复 marker，第二次同时恢复 marker 与 cron。
+
+最后只需要完成知识 Gate：
+
+1. 用自己的话解释：为什么 Snapshot 不能替代 Backup？
+2. 为什么 Revert 后不能只看 VMware 界面显示成功，而必须重新检查 Guest OS？
+3. 如果后续做漏洞实验，你会在什么时候创建 snapshot，什么时候创建 backup？
+
+这三个问题回答通过后，即可进入课程收尾、PR、CI 与 `s00-l03-complete-v2` checkpoint。

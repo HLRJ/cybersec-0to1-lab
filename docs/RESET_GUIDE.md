@@ -75,3 +75,25 @@ Revert
 ```
 
 “SSH 重新连接成功”可以作为 service-level evidence，但不能替代 Guest 内部状态检查。
+## 多状态恢复验证
+
+只验证一个 marker 文件还不够证明恢复流程可靠。
+
+第二轮实验同时改变：
+
+```text
+Persistent state → marker file
+Runtime state    → cron service
+```
+
+Revert 后两个状态同时恢复，同时 SSH 与实验网继续正常。
+
+这说明验证恢复时应覆盖不同类型的 evidence，而不是只检查“VM 能不能开机”。
+
+推荐恢复验证最少包含：
+
+- 一个持久化文件/配置状态；
+- 一个运行时 service state；
+- IP / route；
+- 一个可实际使用的服务连接；
+- 与 Host 的实验网连通性。

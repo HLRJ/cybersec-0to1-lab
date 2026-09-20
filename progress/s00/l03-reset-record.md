@@ -138,3 +138,35 @@ ping 192.168.77.1: 2/2 received, 0% packet loss
 - 因此不能只凭 VMware 显示“已恢复”判断成功，必须由 Guest OS 内部证据完成 verification。
 
 登录 banner 中访问 `changelogs.ubuntu.com` 失败，与“无 Internet default route”的设计一致，但这只能作为旁证，路由表才是主要证据。
+## Round 4 — Multi-state Revert Verification
+
+本轮同时改变磁盘文件状态和运行时服务状态。
+
+### Mutation 后
+
+```text
+marker content: S00-L03 round-2 mutation
+MARKER=EXISTS
+cron: inactive
+ssh: active
+route: 192.168.77.0/24 dev ens33 proto kernel scope link src 192.168.77.10
+```
+
+随后 Revert 到 `S00-L03-PRE-MUTATION`，原 SSH 会话再次出现 `Socket error 10053` 并断开；VM 恢复后重新连接 SSH 成功。
+
+### Revert 后
+
+```text
+MARKER=ABSENT
+cron: active
+ssh: active
+route: 192.168.77.0/24 dev ens33 proto kernel scope link src 192.168.77.10
+ping 192.168.77.1: 2/2 received, 0% packet loss
+```
+
+### 结论
+
+- `S00-L03-PRE-MUTATION` 能恢复文件系统持久化状态；
+- 同时能恢复 cron 的运行时服务状态；
+- SSH 和 Host-Only 网络仍保持课程基线；
+- 相同 checkpoint 已完成两次独立 Revert，恢复行为具有重复性证据。
