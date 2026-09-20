@@ -81,3 +81,46 @@ Missing        → 当前阶段必需但确实不存在
 ```
 
 Burp 在 S00-L04 中属于 `Deferred`，不阻塞本课 Gate。
+## 第三轮：Tool → Role → Evidence
+
+仅仅看到版本号还不够。本轮要让关键工具完成一次最小职责验证。
+
+### Git：证明仓库状态可追踪
+
+```powershell
+git status --short --branch
+git log -1 --oneline
+```
+
+### Python：证明课程测试环境可执行
+
+```powershell
+python -m pytest -q
+```
+
+### OpenSSH：证明宿主机能管理实验 VM
+
+```powershell
+ssh cyberlab@192.168.77.10 "hostname; ip -brief address; systemctl is-active ssh"
+```
+
+### Wireshark / TShark：证明抓包引擎可调用
+
+```powershell
+& 'D:\Program Files\Wireshark\tshark.exe' --version
+& 'D:\Program Files\Wireshark\tshark.exe' -D
+```
+
+这里只列出本机 capture interfaces，不开始抓包。
+
+### VMware Workstation：证明虚拟化平台版本可追踪
+
+```powershell
+(Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\VMware, Inc.\VMware Workstation').ProductVersion
+```
+
+### 本轮停止点
+
+把以上命令的完整输出发回来。重点不是全绿，而是能解释每个工具在后续课程里承担什么职责。
+
+Burp Suite 当前保持 `DEFERRED`，不参与这一轮 Gate。

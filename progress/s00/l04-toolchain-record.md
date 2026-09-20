@@ -72,3 +72,18 @@ OK       VS Code              1.138.0
 - OpenSSH 在学习者真实 PowerShell 中版本检测正常；
 - Burp Suite 目前确实未发现，但它不是 S00-L04 的当前必需工具；
 - Burp 延迟到 Web 安全课程真正需要代理/重放 HTTP 请求时再安装。
+## Round 3 — Tool → Role → Evidence
+
+等待学习者执行：
+
+```text
+Git evidence:
+
+Python evidence:
+
+SSH evidence:
+
+TShark evidence:
+
+VMware evidence:
+```
