@@ -179,3 +179,25 @@ VMware Network Adapter VMnet2 可被枚举为 capture interface
 ```
 
 结论：虚拟化平台版本可以从 Windows 注册表稳定读取并记录。
+## Final Knowledge Gate
+
+学习者回答并通过：
+
+1. 全局环境可能保留历史项目依赖；直接升级/修改全局包可能破坏旧项目，因此当前项目应使用 repo-local `.venv` 隔离依赖。
+2. VMnet2 是课程主动创建并授权的 Cyber Range 网络；WLAN 属于真实世界网络，没有被纳入实验授权范围。
+3. `-i 6` 只是 TShark 当前枚举顺序；安装软件、虚拟网络或适配器变化后编号可能改变，因此脚本应按接口身份/名称重新解析。
+
+### S00-L04 Gate Result
+
+```text
+Tool inventory repeatable:       PASS
+False-negative detection fixed:  PASS
+Project venv isolation:          PASS
+Git role evidence:               PASS
+SSH role evidence:               PASS
+TShark/Npcap role evidence:      PASS
+VMware role evidence:            PASS
+Scope/interface reasoning:       PASS
+```
+
+Checkpoint target: `s00-l04-complete-v2`.

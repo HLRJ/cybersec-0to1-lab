@@ -192,12 +192,25 @@ VMware Network Adapter VMnet2
 
 而不是假定永远使用 `-i 6`。
 
-## 最终 Gate
+## 最终 Gate：通过
 
-回答三个问题即可：
+学习者能够基于本轮真实故障与实验环境解释：
 
-1. 为什么项目测试应该优先使用 repo-local `.venv`，而不是直接依赖全局 Python 环境？
-2. `tshark -D` 里的 `VMnet2` 为什么比 `WLAN` 更适合后续 Cyber Range 抓包实验？
-3. 为什么不能把当前的 TShark 接口编号 `6` 永久写进课程脚本？
+1. repo-local `.venv` 可以把当前项目依赖与全局/历史项目依赖隔离，避免一个项目升级或遗留包污染另一个项目；
+2. `VMnet2` 是课程明确创建并授权的实验网络，而 `WLAN` 属于真实网络，不能因为“能看到”就当作实验对象；
+3. TShark 接口编号只是当前枚举顺序，安装新软件、虚拟网卡或网络配置变化后可能重新编号，因此不能永久写死 `-i 6`。
 
-回答通过后进入 PR / CI / merge，并创建 `s00-l04-complete-v2`。
+本课已经验证：
+
+```text
+Tool installed ≠ Tool discoverable
+Python available ≠ Project environment reproducible
+Interface visible ≠ Interface authorized
+Interface number ≠ Interface identity
+```
+
+本课 checkpoint：
+
+```text
+s00-l04-complete-v2
+```
