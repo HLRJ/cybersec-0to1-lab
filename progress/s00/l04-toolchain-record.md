@@ -87,3 +87,34 @@ TShark evidence:
 
 VMware evidence:
 ```
+## Round 3 — Python 环境故障
+
+执行 `python -m pytest -q` 时，工具链验证没有通过。当前 `python` 解析到：
+
+```text
+D:\NewProgramFiles\Miniconda\python.exe
+Python 3.13.2
+```
+
+全局环境中同时存在：
+
+```text
+pytest 9.1.1
+pyreadline 2.1
+```
+
+pytest 初始化 capture 时导入 `readline`，最终进入旧版 `pyreadline` 并触发：
+
+```text
+AttributeError: module 'collections' has no attribute 'Callable'
+```
+
+只读检查还发现本机有 Python 3.11 与 3.9。仓库 `.gitignore` 已忽略 `.venv/`。
+
+### Root Cause
+
+这不是课程测试本身失败，而是全局 Miniconda 环境被一个与现代 Python 不兼容的 `pyreadline 2.1` 污染。
+
+### 决策
+
+不卸载用户全局包。课程采用 repo-local `.venv` 隔离开发依赖，并用虚拟环境内的 Python 运行 pytest。

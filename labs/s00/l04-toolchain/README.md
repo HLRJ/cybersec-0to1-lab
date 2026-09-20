@@ -124,3 +124,25 @@ ssh cyberlab@192.168.77.10 "hostname; ip -brief address; systemctl is-active ssh
 把以上命令的完整输出发回来。重点不是全绿，而是能解释每个工具在后续课程里承担什么职责。
 
 Burp Suite 当前保持 `DEFERRED`，不参与这一轮 Gate。
+## 第三轮真实故障：Python 可用，不代表项目环境可用
+
+第一次执行 `python -m pytest -q` 时，系统默认 Python 是 Miniconda Python 3.13.2，但其全局 `site-packages` 中存在旧版 `pyreadline 2.1`。
+
+pytest 初始化时因此触发：
+
+```text
+AttributeError: module 'collections' has no attribute 'Callable'
+```
+
+这说明工具链还需要区分两层：
+
+```text
+Python Runtime        → python.exe 能不能运行
+Project Environment  → 项目依赖是否隔离、可重复
+```
+
+课程不通过“卸掉全局坏包”来掩盖问题，而是建立仓库自己的 `.venv`。这样不会破坏其他 Conda 项目，也更接近 CI 的可重复环境。
+
+### 下一步：建立 repo-local venv
+
+不要使用 `--system-site-packages`。虚拟环境必须与全局 `pyreadline` 隔离。
