@@ -12,6 +12,7 @@ class ToolCheck:
     name: str
     command: tuple[str, ...] | None = None
     candidates: tuple[str, ...] = ()
+    registry_names: tuple[str, ...] = ()
     note: str = ""
 
 
@@ -39,6 +40,58 @@ def _find_candidate(paths: tuple[str, ...]) -> str | None:
     return str(next((p for p in expanded if p.exists()), "")) or None
 
 
+def _find_windows_registry_app(names: tuple[str, ...]) -> str | None:
+    if os.name != "nt" or not names:
+        return None
+
+    try:
+        import winreg
+    except ImportError:
+        return None
+
+    roots = (
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+    )
+    wanted = tuple(name.casefold() for name in names)
+
+    for hive, key_path in roots:
+        try:
+            with winreg.OpenKey(hive, key_path) as root:
+                index = 0
+                while True:
+                    try:
+                        subkey_name = winreg.EnumKey(root, index)
+                    except OSError:
+                        break
+                    index += 1
+                    try:
+                        with winreg.OpenKey(root, subkey_name) as subkey:
+                            display_name = str(winreg.QueryValueEx(subkey, "DisplayName")[0])
+                            if not any(token in display_name.casefold() for token in wanted):
+                                continue
+                            try:
+                                version = str(winreg.QueryValueEx(subkey, "DisplayVersion")[0])
+                            except OSError:
+                                version = "unknown-version"
+                            try:
+                                location = str(winreg.QueryValueEx(subkey, "InstallLocation")[0]).strip()
+                            except OSError:
+                                location = ""
+                            if not location:
+                                try:
+                                    location = str(winreg.QueryValueEx(subkey, "DisplayIcon")[0]).split(",", 1)[0]
+                                except OSError:
+                                    location = "registry entry"
+                            return f"{display_name} {version} | {location} | detected via registry"
+                    except OSError:
+                        continue
+        except OSError:
+            continue
+    return None
+
+
 def check_tool(tool: ToolCheck) -> tuple[str, str]:
     if tool.command:
         executable = shutil.which(tool.command[0])
@@ -49,6 +102,11 @@ def check_tool(tool: ToolCheck) -> tuple[str, str]:
     candidate = _find_candidate(tool.candidates)
     if candidate:
         return "OK", f"found: {candidate}"
+
+    registry_app = _find_windows_registry_app(tool.registry_names)
+    if registry_app:
+        suffix = f" | {tool.note}" if tool.note else ""
+        return "OK", f"{registry_app}{suffix}"
 
     suffix = f" | {tool.note}" if tool.note else ""
     return "MISSING", f"not found{suffix}"
@@ -61,17 +119,19 @@ TOOLS = (
     ToolCheck("curl", ("curl.exe", "--version")),
     ToolCheck(
         "Wireshark",
-        ("tshark", "--version"),
-        (r"%ProgramFiles%\Wireshark\Wireshark.exe", r"%ProgramFiles%\Wireshark\tshark.exe"),
-        "TShark in PATH is preferred for reproducible CLI checks",
+        command=("tshark", "--version"),
+        candidates=(r"%ProgramFiles%\Wireshark\Wireshark.exe", r"%ProgramFiles%\Wireshark\tshark.exe"),
+        registry_names=("wireshark",),
+        note="TShark in PATH is preferred for reproducible CLI checks",
     ),
     ToolCheck(
         "VMware Workstation",
-        ("vmrun", "-T", "ws", "list"),
-        (
+        command=("vmrun", "-T", "ws", "list"),
+        candidates=(
             r"%ProgramFiles(x86)%\VMware\VMware Workstation\vmware.exe",
             r"%ProgramFiles%\VMware\VMware Workstation\vmware.exe",
         ),
+        registry_names=("vmware workstation",),
     ),
     ToolCheck(
         "Burp Suite",
@@ -79,6 +139,7 @@ TOOLS = (
             r"%LOCALAPPDATA%\Programs\BurpSuiteCommunity\BurpSuiteCommunity.exe",
             r"%ProgramFiles%\BurpSuiteCommunity\BurpSuiteCommunity.exe",
         ),
+        registry_names=("burp suite", "burpsuite"),
         note="Burp may be installed in a custom location",
     ),
     ToolCheck("VS Code", ("code", "--version")),

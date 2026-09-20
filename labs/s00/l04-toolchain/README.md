@@ -50,3 +50,19 @@ STATUS | TOOL | VERSION / LOCATION / NOTE
 先不要为了让结果“全绿”而安装软件。我们会根据真实结果判断哪些已经满足要求、哪些只是 PATH 问题、哪些确实缺失、哪些应该延迟安装。
 
 最终 checkpoint：`s00-l04-complete-v2`。
+## 第一轮真实发现：MISSING 不等于未安装
+
+第一次实跑中，checker 把 VMware Workstation 和 Wireshark 都报告为 `MISSING`，但随后只读检查 Windows 安装注册表发现二者实际已经安装在 `D:` 盘自定义目录。
+
+这说明工具检测需要分层：
+
+```text
+PATH
+→ 常见安装位置
+→ Windows uninstall registry
+→ 仍未发现才标记为 MISSING
+```
+
+课程因此升级 `env_check.py`：Windows 下会继续读取卸载注册表，但仍保持只读。
+
+这也是 L04 的一个核心知识点：**CLI 不在 PATH、GUI 安装在自定义目录、真正未安装，是三种不同状态。**
