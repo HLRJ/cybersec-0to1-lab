@@ -118,3 +118,34 @@ AttributeError: module 'collections' has no attribute 'Callable'
 ### 决策
 
 不卸载用户全局包。课程采用 repo-local `.venv` 隔离开发依赖，并用虚拟环境内的 Python 运行 pytest。
+## Round 4 — Repo-local venv Recovery
+
+学习者没有修改全局 Miniconda 环境，而是在仓库 worktree 中创建：
+
+```text
+.venv/
+```
+
+执行：
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe --version
+.\.venv\Scripts\python.exe -m pip list
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+实际结果：
+
+```text
+Python 3.13.2
+pytest 9.1.1
+PyYAML 6.0.3
+pyreadline: not installed in project venv
+17 passed in 0.69s
+```
+
+结论：项目环境与全局 Miniconda `site-packages` 成功隔离；无需卸载用户全局 `pyreadline` 即可恢复课程测试。
+
+pip 提示自身存在新版本，但当前依赖安装与测试均成功，因此本课不为追求最新版本而升级 pip。

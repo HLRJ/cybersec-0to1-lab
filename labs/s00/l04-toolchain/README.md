@@ -146,3 +146,26 @@ Project Environment  → 项目依赖是否隔离、可重复
 ### 下一步：建立 repo-local venv
 
 不要使用 `--system-site-packages`。虚拟环境必须与全局 `pyreadline` 隔离。
+## Project Environment Gate：通过
+
+真实修复采用 repo-local `.venv`，没有修改全局 Miniconda 包。
+
+验证结果：
+
+```text
+Runtime:       Python 3.13.2
+pytest:        9.1.1
+PyYAML:        6.0.3
+global leak:   pyreadline 未进入项目 venv
+test suite:    17 passed
+```
+
+因此本课程后续在 Windows 本地执行 Python 测试时，优先使用：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+而不是假设全局 `python -m pytest` 一定可靠。
+
+`.venv/` 已被 `.gitignore` 忽略，不进入版本控制。
