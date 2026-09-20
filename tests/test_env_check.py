@@ -34,3 +34,13 @@ def test_registry_fallback_can_resolve_custom_install(monkeypatch) -> None:
     status, detail = env_check.check_tool(tool)
     assert status == "OK"
     assert "detected via registry" in detail
+
+def test_optional_missing_tool_is_deferred() -> None:
+    tool = ToolCheck(
+        "Later Tool",
+        ("cybersec-0to1-command-that-does-not-exist", "--version"),
+        required_now=False,
+    )
+    status, detail = check_tool(tool)
+    assert status == "DEFERRED"
+    assert "install when the course reaches this tool" in detail

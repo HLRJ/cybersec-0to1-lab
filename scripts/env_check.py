@@ -13,6 +13,7 @@ class ToolCheck:
     command: tuple[str, ...] | None = None
     candidates: tuple[str, ...] = ()
     registry_names: tuple[str, ...] = ()
+    required_now: bool = True
     note: str = ""
 
 
@@ -109,6 +110,8 @@ def check_tool(tool: ToolCheck) -> tuple[str, str]:
         return "OK", f"{registry_app}{suffix}"
 
     suffix = f" | {tool.note}" if tool.note else ""
+    if not tool.required_now:
+        return "DEFERRED", f"not found; install when the course reaches this tool{suffix}"
     return "MISSING", f"not found{suffix}"
 
 TOOLS = (
@@ -140,6 +143,7 @@ TOOLS = (
             r"%ProgramFiles%\BurpSuiteCommunity\BurpSuiteCommunity.exe",
         ),
         registry_names=("burp suite", "burpsuite"),
+        required_now=False,
         note="Burp may be installed in a custom location",
     ),
     ToolCheck("VS Code", ("code", "--version")),
@@ -149,14 +153,17 @@ TOOLS = (
 def main() -> int:
     print("STATUS   TOOL                 DETAIL")
     print("-" * 100)
-    missing = 0
+    missing_required = 0
+    deferred = 0
     for tool in TOOLS:
         status, detail = check_tool(tool)
         print(f"{status:<8} {tool.name:<20} {detail}")
-        missing += status == "MISSING"
+        missing_required += status == "MISSING"
+        deferred += status == "DEFERRED"
 
     print("-" * 100)
-    print(f"Missing tools: {missing}")
+    print(f"Missing required tools: {missing_required}")
+    print(f"Deferred tools: {deferred}")
     print("Read-only inventory complete; no software was installed or changed.")
     return 0
 

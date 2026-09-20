@@ -66,3 +66,18 @@ PATH
 课程因此升级 `env_check.py`：Windows 下会继续读取卸载注册表，但仍保持只读。
 
 这也是 L04 的一个核心知识点：**CLI 不在 PATH、GUI 安装在自定义目录、真正未安装，是三种不同状态。**
+## 第二轮结论：工具链不是“全装齐才算通过”
+
+修正后的真实环境中，Python、Git、PowerShell、OpenSSH、curl、Wireshark、VMware Workstation 与 VS Code 均可确认存在。
+
+Burp Suite 暂未安装。本课程不为了让检查结果全绿而提前安装它；Burp 将在真正进入 Web 代理与请求重放实验前再安装和验证。
+
+因此工具链健康检查需要区分：
+
+```text
+Required now   → 当前阶段必须可用
+Deferred       → 后续课程需要时再安装
+Missing        → 当前阶段必需但确实不存在
+```
+
+Burp 在 S00-L04 中属于 `Deferred`，不阻塞本课 Gate。
