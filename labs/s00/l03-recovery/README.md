@@ -182,3 +182,45 @@ MARKER=EXISTS
 - 然后重新执行 mutation。
 
 这条规则背后的重点是：**Snapshot 的顺序本身也是实验设计的一部分。**
+## 第四轮：同时恢复文件状态与运行时服务状态
+
+第一次实验已经证明文件系统可以回到 checkpoint。第二次复用同一个 `S00-L03-PRE-MUTATION`，同时改变两类状态：
+
+```text
+Persistent state: ~/s00-l03-marker.txt
+Runtime state:    cron service
+```
+
+### Step 6：先确认 cron 可作为实验对象
+
+执行：
+
+```bash
+systemctl is-active cron
+systemctl is-enabled cron
+```
+
+只有当结果表明 `cron` 当前为 active，才继续本轮。
+
+如果显示 `inactive`、`failed`、`not-found` 等，不修改它，先停止并记录实际输出。
+
+### Step 7：制造双状态 Mutation
+
+确认 cron 为 active 后执行：
+
+```bash
+printf 'S00-L03 round-2 mutation\n' > ~/s00-l03-marker.txt
+sudo systemctl stop cron
+
+cat ~/s00-l03-marker.txt
+test -e ~/s00-l03-marker.txt && echo "MARKER=EXISTS" || echo "MARKER=ABSENT"
+systemctl is-active cron || true
+systemctl is-active ssh
+ip route
+```
+
+期望看到 marker 存在、cron 为 inactive，而 SSH 与实验网路由仍正常。
+
+此时停下来保留证据，再 Revert 到 `S00-L03-PRE-MUTATION`。
+
+Revert 后重新 SSH，并验证 marker 消失、cron 恢复 active、SSH 与实验网仍正常。
