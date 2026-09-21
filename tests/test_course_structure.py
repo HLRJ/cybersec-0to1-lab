@@ -37,6 +37,12 @@ def test_s00_l04_toolchain_assets_are_present() -> None:
     assert Path("artifacts/.gitkeep").is_file()
 
 
+def test_s00_l05_telemetry_assets_are_present() -> None:
+    assert Path("labs/s00/l05-baseline-telemetry/README.md").is_file()
+    assert Path("scripts/demo_service.py").is_file()
+    assert Path("progress/s00/l05-telemetry-map.md").is_file()
+
+
 def test_curriculum_lists_s00_labs_in_order() -> None:
     text = Path("CURRICULUM.md").read_text(encoding="utf-8")
     headings = ["## S00-L01", "## S00-L02", "## S00-L03", "## S00-L04", "## S00-L05"]
